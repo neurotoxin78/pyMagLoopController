@@ -201,7 +201,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addButton.clicked.connect(self.addButton_click)
         self.bandtreeView.clicked.connect(self.getValue)
         self.runButton.clicked.connect(self.runButton_click)
+        self.deleteButton.clicked.connect(self.deleteButton_click)
         self.comboInit()
+
+    def deleteButton_click(self):
+        rows = {index.row() for index in self.bandtreeView.selectionModel().selectedIndexes()}
+        for row in rows:
+            for column in range(self.bandtreeView.model().columnCount()):
+                index = self.bandtreeView.model().index(row, column)
+                self.model.takeRow(index.row())
+
 
     def runButton_click(self):
         if self.connected:
