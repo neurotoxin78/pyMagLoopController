@@ -6,10 +6,13 @@ from PyQt5 import QtCore, QtWidgets, uic
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtCore import Qt
 from time import sleep
+from rich.console import Console
+
+con = Console()
 
 def extended_exception_hook(exctype, value, traceback):
     # Print the error and traceback
-    print(exctype, value, traceback)
+    con.log(exctype, value, traceback)
     # Call the normal Exception hook after
     sys._excepthook(exctype, value, traceback)
     sys.exit(1)
@@ -116,28 +119,25 @@ class MainWindow(QtWidgets.QMainWindow):
         config = self.jconfig.get_stored_bands()
         if "bands" in config:
             bands = config["bands"]
-            print(bands)
             for key in bands:
                 self.addTreeItem(self.model, bands[key]['band'], bands[key]['step'], bands[key]['desc'])
         else:
             raise KeyError("Error: Key 'bands' not found in config file.")
 
     def store_bandTree(self):
-        data = []
         d_dict = {}
         d_dict['bands'] = {}
         for row in range(self.model.rowCount()):
-            data.append([])
             d_dict['bands'][row] = {}
             for column in range(self.model.columnCount()):
                 index = self.model.index(row, column)
-                data[row].append(str(self.model.data(index)))
-                if column == 0:
-                    d_dict['bands'][row]['band'] = str(self.model.data(index))
-                elif column == 1:
-                    d_dict['bands'][row]['step'] = str(self.model.data(index))
-                else:
-                    d_dict['bands'][row]['desc'] = str(self.model.data(index))
+                match column:
+                    case 0:
+                        d_dict['bands'][row]['band'] = str(self.model.data(index))
+                    case 1:
+                        d_dict['bands'][row]['step'] = str(self.model.data(index))
+                    case 2:
+                        d_dict['bands'][row]['desc'] = str(self.model.data(index))
         with open("bands.json", "w") as fp:
             jconf.dump(d_dict, fp)
 
@@ -215,14 +215,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 output.append(row_data)
             if self.current_position > int(output[0][1]):
                 difference = self.current_position - int(output[0][1]) - 1
-                print(f"minus: {difference}")
+                con.log(f"minus: {difference}")
                 steps =  round(int(difference) / 10)
                 for i in range(int(steps)):
                     self.moveTo(1, 10, self.speed)
                     sleep(0.01)
             else:
                 difference = int(output[0][1]) - self.current_position + 1
-                print(f"plus {difference}")
+                con.log(f"plus {difference}")
                 steps =  round(int(difference) / 10)
                 for i in range(int(steps)):
                     self.moveTo(0, 10, self.speed)
@@ -236,7 +236,7 @@ class MainWindow(QtWidgets.QMainWindow):
             values = self.add_dialog.get_fields_values()
             self.addTreeItem(self.model, values['band'], values['step'], values['desc'])
         else:
-            print("Cancel")
+            con.log("Cancel")
 
     def get_info(self):
         if self.connected:
@@ -281,14 +281,13 @@ class MainWindow(QtWidgets.QMainWindow):
             resp = requests.get(self.url + self.api_park)
             json = resp.json()
             if 'step_count' in json:
-                print(json['step_count'])
+                con.log(json['step_count'])
                 self.current_position_label.setText(str(json['step_count']))
             if 'status' in json:
                 self.statuslabel.setText(F"Статус: {json['status']}")
 
     def upButton_click(self):
         self.moveTo(0, self.step, self.speed)
-
 
     def downButton_click(self):
         self.moveTo(1, self.step, self.speed)
@@ -311,11 +310,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.connected = False
 
     def closeEvent(self, event):
-        print("Closing")
+        con.log("[green]Closing[/]")
         self.store_defaults()
-        print("Storing defaults")
+        con.log("Storing defaults")
         self.store_bandTree()
-        print("Storing bands tree")
+        con.log("Storing bands tree")
         event.accept()
         sys.exit()
 
