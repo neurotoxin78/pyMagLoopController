@@ -39,7 +39,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>Ручне налаштування</string>
+     <string>Налаштування</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -156,7 +156,7 @@
     <widget class="QPushButton" name="addButton">
      <property name="geometry">
       <rect>
-       <x>145</x>
+       <x>165</x>
        <y>240</y>
        <width>86</width>
        <height>28</height>
@@ -164,19 +164,6 @@
      </property>
      <property name="text">
       <string>Додати</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="editButton">
-     <property name="geometry">
-      <rect>
-       <x>235</x>
-       <y>240</y>
-       <width>81</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Редагувати</string>
      </property>
     </widget>
     <widget class="QPushButton" name="deleteButton">
@@ -197,7 +184,7 @@
       <rect>
        <x>10</x>
        <y>240</y>
-       <width>93</width>
+       <width>86</width>
        <height>28</height>
       </rect>
      </property>

@@ -96,7 +96,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Main Timer
         self.main_Timer = QtCore.QTimer()
         self.main_Timer.timeout.connect(self.mainTimer)
-        self.main_Timer.start(5000)
+        self.main_Timer.start(30000)
         # Variables
         self.jconfig = Jconfig()
         self.connected = False
@@ -253,6 +253,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def mainTimer(self):
         gc.collect()
+        mem = gc.get_stats()
+        con.log("Garbage collect", justify="center")
+        con.print(mem)
 
     def moveTo(self, dir, step, speed):
         if self.connected:
